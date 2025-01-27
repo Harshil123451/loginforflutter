@@ -6,6 +6,8 @@ import 'profile_screen.dart';
 import 'change_password_screen.dart';
 import 'dashboard_screen.dart';
 import 'map_screen.dart';
+import 'create_ticket_screen.dart';
+import 'screens/view_tickets_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,6 +33,8 @@ class MyApp extends StatelessWidget {
         '/dashboard': (context) => const DashboardScreen(),
         '/change-password': (context) => const ChangePasswordScreen(),
         '/map': (context) => const MapScreen(),
+        '/create-ticket': (context) => const CreateTicketScreen(),
+        '/view-tickets': (context) => const ViewTicketsScreen(),
       },
       debugShowCheckedModeBanner: false,
     );

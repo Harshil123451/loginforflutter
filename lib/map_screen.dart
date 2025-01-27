@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 
 class MapScreen extends StatefulWidget {
@@ -10,45 +11,118 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  GoogleMapController? _mapController;
-  Location _location = Location();
+  final MapController _mapController = MapController();
+  final Location _location = Location();
   LatLng _currentPosition = const LatLng(0, 0);
   bool _isLoading = true;
-  Set<Marker> _markers = {};
+  List<Marker> _markers = [];
 
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
+    _initializeLocation();
+  }
+
+  Future<void> _initializeLocation() async {
+    try {
+      // First check and request permission
+      final permissionStatus = await _location.hasPermission();
+      if (permissionStatus == PermissionStatus.denied) {
+        final newStatus = await _location.requestPermission();
+        if (newStatus != PermissionStatus.granted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location permission is required')),
+          );
+          return;
+        }
+      }
+
+      // Then check if service is enabled
+      final serviceEnabled = await _location.serviceEnabled();
+      if (!serviceEnabled) {
+        final isEnabled = await _location.requestService();
+        if (!isEnabled) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location service is required')),
+          );
+          return;
+        }
+      }
+
+      // Configure location settings
+      await _location.changeSettings(
+        accuracy: LocationAccuracy.high,
+        interval: 1000,
+      );
+
+      await _getCurrentLocation();
+    } catch (e) {
+      debugPrint('Error initializing location: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error initializing location: $e')),
+        );
+      }
+    }
   }
 
   Future<void> _getCurrentLocation() async {
     try {
       final locationData = await _location.getLocation();
+      
+      if (locationData.latitude == null || locationData.longitude == null) {
+        throw Exception('Location data is incomplete');
+      }
+
       setState(() {
         _currentPosition = LatLng(
           locationData.latitude!,
           locationData.longitude!,
         );
-        _markers.add(
+        _markers = [
           Marker(
-            markerId: const MarkerId('currentLocation'),
-            position: _currentPosition,
-            infoWindow: const InfoWindow(title: 'Current Location'),
+            point: _currentPosition,
+            builder: (context) => const Icon(
+              Icons.location_on,
+              color: Colors.red,
+              size: 40,
+            ),
           ),
-        );
+        ];
         _isLoading = false;
       });
-      _mapController?.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: _currentPosition,
-            zoom: 15,
-          ),
-        ),
-      );
+
+      _mapController.move(_currentPosition, 15);
+
+      // Set up location change subscription
+      _location.onLocationChanged.listen((LocationData newLocation) {
+        if (!mounted) return;
+        if (newLocation.latitude != null && newLocation.longitude != null) {
+          setState(() {
+            _currentPosition = LatLng(
+              newLocation.latitude!,
+              newLocation.longitude!,
+            );
+            _markers = [
+              Marker(
+                point: _currentPosition,
+                builder: (context) => const Icon(
+                  Icons.location_on,
+                  color: Colors.red,
+                  size: 40,
+                ),
+              ),
+            ];
+          });
+        }
+      });
     } catch (e) {
-      print('Error getting location: $e');
+      debugPrint('Error getting location: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to get location')),
+        );
+      }
     }
   }
 
@@ -57,28 +131,23 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Map'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.my_location),
-            onPressed: _getCurrentLocation,
-          ),
-        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: _currentPosition,
+          : FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                center: _currentPosition,
                 zoom: 15,
+                maxZoom: 18,
               ),
-              onMapCreated: (controller) {
-                _mapController = controller;
-              },
-              markers: _markers,
-              myLocationEnabled: true,
-              myLocationButtonEnabled: false,
-              zoomControlsEnabled: false,
-              mapToolbarEnabled: false,
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.example.app',
+                ),
+                MarkerLayer(markers: _markers),
+              ],
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: _getCurrentLocation,
@@ -89,7 +158,7 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   void dispose() {
-    _mapController?.dispose();
+    _mapController.dispose();
     super.dispose();
   }
 } 

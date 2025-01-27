@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'models/user_stats.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -8,7 +9,30 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  late UserStats _userStats;
+  bool _isLoading = true;
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserStats();
+  }
+
+  Future<void> _loadUserStats() async {
+    // TODO: Replace with actual API call
+    await Future.delayed(const Duration(seconds: 1));
+    setState(() {
+      _userStats = UserStats(
+        completedTasks: 15,
+        pendingTasks: 3,
+        rating: 4.5,
+        totalReviews: 28,
+        level: 'Intermediate',
+      );
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,21 +46,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildWelcomeCard(),
-            const SizedBox(height: 20),
-            _buildQuickActions(context),
-            const SizedBox(height: 20),
-            _buildRecentActivities(),
-            const SizedBox(height: 20),
-            _buildStatistics(),
-          ],
-        ),
-      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildWelcomeCard(),
+                  const SizedBox(height: 24),
+                  _buildStatsCards(),
+                  const SizedBox(height: 24),
+                  _buildQuickActions(context),
+                ],
+              ),
+            ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
@@ -72,42 +96,174 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.blue.shade400, Colors.blue.shade800],
-          ),
           borderRadius: BorderRadius.circular(15),
+          gradient: LinearGradient(
+            colors: [Colors.blue[700]!, Colors.blue[900]!],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Welcome back,',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'John Doe',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.white.withOpacity(0.9),
+                  child: Text(
+                    _userStats.level[0],
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue[700],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'John Doe', // Replace with actual user name
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        _userStats.level,
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildStatItem('Tasks', '12'),
-                _buildStatItem('Projects', '4'),
-                _buildStatItem('Teams', '3'),
+                _buildStatItem('Tasks', _userStats.completedTasks.toString()),
+                _buildStatItem('Pending', _userStats.pendingTasks.toString()),
+                _buildRatingItem(_userStats.rating, _userStats.totalReviews),
               ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildStatsCards() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildStatCard(
+            'Performance',
+            _userStats.rating.toString(),
+            Icons.star,
+            Colors.orange,
+            '${_userStats.totalReviews} reviews',
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: _buildStatCard(
+            'Completed',
+            _userStats.completedTasks.toString(),
+            Icons.task_alt,
+            Colors.green,
+            'Total tasks',
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+    String subtitle,
+  ) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: color, size: 32),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRatingItem(double rating, int reviews) {
+    return Column(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.star,
+              color: Colors.amber,
+              size: 20,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              rating.toStringAsFixed(1),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        Text(
+          '$reviews reviews',
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.9),
+            fontSize: 14,
+          ),
+        ),
+      ],
     );
   }
 
@@ -154,24 +310,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             _buildActionCard(
               context,
-              Icons.task,
-              'New Task',
+              Icons.confirmation_number,
+              'Create Ticket',
               Colors.orange,
-              () {},
+              () => Navigator.pushNamed(context, '/create-ticket'),
             ),
             _buildActionCard(
               context,
               Icons.people,
               'Team Chat',
-              Colors.green,
+              const Color.fromARGB(255, 142, 235, 145),
               () {},
             ),
             _buildActionCard(
               context,
-              Icons.calendar_today,
-              'Schedule',
+              Icons.list_alt,
+              'View Tickets',
               Colors.purple,
-              () {},
+              () => Navigator.pushNamed(context, '/view-tickets'),
             ),
             _buildActionCard(
               context,
