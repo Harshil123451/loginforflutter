@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'models/user_stats.dart';
+import 'l10n/app_localizations.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -38,7 +39,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: Text(AppLocalizations.of(context).dashboard),
         actions: [
           IconButton(
             icon: const Icon(Icons.person),
@@ -58,6 +59,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   _buildStatsCards(),
                   const SizedBox(height: 24),
                   _buildQuickActions(context),
+                  const SizedBox(height: 24),
+                  _buildRecentActivities(),
                 ],
               ),
             ),
@@ -67,20 +70,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
           setState(() {
             _currentIndex = index;
           });
-          // TODO: Implement navigation
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+            icon: const Icon(Icons.dashboard),
+            label: AppLocalizations.of(context).dashboard,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.analytics),
-            label: 'Analytics',
+            icon: const Icon(Icons.analytics),
+            label: AppLocalizations.of(context).analytics,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+            icon: const Icon(Icons.settings),
+            label: AppLocalizations.of(context).settings,
           ),
         ],
       ),
@@ -165,7 +167,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       children: [
         Expanded(
           child: _buildStatCard(
-            'Performance',
+            AppLocalizations.of(context).performance,
             _userStats.rating.toString(),
             Icons.star,
             Colors.orange,
@@ -293,12 +295,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Quick Actions',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+        Text(
+          AppLocalizations.of(context).quickActions,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         GridView.count(
@@ -311,7 +310,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             _buildActionCard(
               context,
               Icons.confirmation_number,
-              'Create Ticket',
+              AppLocalizations.of(context).createTicket,
               Colors.orange,
               () => Navigator.pushNamed(context, '/create-ticket'),
             ),
@@ -325,14 +324,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
             _buildActionCard(
               context,
               Icons.list_alt,
-              'View Tickets',
+              AppLocalizations.of(context).viewTickets,
               Colors.purple,
               () => Navigator.pushNamed(context, '/view-tickets'),
             ),
             _buildActionCard(
               context,
               Icons.map,
-              'Map',
+              AppLocalizations.of(context).map,
               Colors.blue,
               () => Navigator.pushNamed(context, '/map'),
             ),

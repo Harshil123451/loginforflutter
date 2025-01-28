@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'change_password_screen.dart';
 import 'edit_profile_screen.dart';
+import 'models/app_language.dart';
+import 'package:provider/provider.dart';
+import 'providers/language_provider.dart';
+import 'l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -13,12 +17,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String _name = 'John Doe';
   String _email = 'john.doe@example.com';
   String _phone = '+1 234 567 890';
+  String _selectedLanguage = 'en';
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize selected language from provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<LanguageProvider>(context, listen: false);
+      setState(() {
+        _selectedLanguage = provider.currentLocale.languageCode;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text(AppLocalizations.of(context).profile),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -116,6 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 20),
           _buildSection('Account Settings', [
             _buildActionTile('Change Password', Icons.lock, context),
+            _buildActionTile('Language', Icons.language, context),
             _buildActionTile('Notifications', Icons.notifications, context),
             _buildActionTile('Privacy Settings', Icons.privacy_tip, context),
           ]),
@@ -174,16 +192,71 @@ class _ProfileScreenState extends State<ProfileScreen> {
           fontWeight: FontWeight.w500,
         ),
       ),
-      trailing: const Icon(Icons.chevron_right),
+      trailing: title == 'Language'
+          ? Text(
+              supportedLanguages
+                  .firstWhere((lang) => lang.code == _selectedLanguage)
+                  .nativeName,
+              style: TextStyle(color: Colors.grey[600]),
+            )
+          : const Icon(Icons.chevron_right),
       onTap: () {
         if (title == 'Change Password') {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const ChangePasswordScreen()),
           );
+        } else if (title == 'Language') {
+          _showLanguageDialog();
         }
         // TODO: Implement other actions
       },
+    );
+  }
+
+  void _showLanguageDialog() {
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select Language'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: supportedLanguages.map((language) {
+              return RadioListTile<String>(
+                title: Text(language.name),
+                subtitle: Text(language.nativeName),
+                value: language.code,
+                groupValue: _selectedLanguage,
+                onChanged: (value) async {
+                  if (value != null) {
+                    await languageProvider.changeLanguage(value);
+                    setState(() {
+                      _selectedLanguage = value;
+                    });
+                    if (mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Language changed to ${language.name}'),
+                        ),
+                      );
+                    }
+                  }
+                },
+              );
+            }).toList(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
     );
   }
 } 

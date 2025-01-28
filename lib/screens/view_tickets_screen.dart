@@ -3,6 +3,7 @@ import '../models/ticket.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../l10n/app_localizations.dart';
 
 class ViewTicketsScreen extends StatefulWidget {
   const ViewTicketsScreen({Key? key}) : super(key: key);
@@ -77,7 +78,7 @@ class _ViewTicketsScreenState extends State<ViewTicketsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tickets'),
+        title: Text(AppLocalizations.of(context).viewTickets),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -144,7 +145,7 @@ class _ViewTicketsScreenState extends State<ViewTicketsScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No tickets yet',
+            AppLocalizations.of(context).noTicketsYet,
             style: TextStyle(
               fontSize: 18,
               color: Colors.grey[600],
@@ -153,7 +154,7 @@ class _ViewTicketsScreenState extends State<ViewTicketsScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Create a new ticket to get started',
+            AppLocalizations.of(context).createTicket,
             style: TextStyle(
               color: Colors.grey[500],
             ),

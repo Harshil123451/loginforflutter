@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'providers/language_provider.dart';
+import 'models/app_language.dart';
 import 'login_screen.dart';
 import 'signup_screen.dart';
 import 'welcome_screen.dart';
@@ -8,9 +13,18 @@ import 'dashboard_screen.dart';
 import 'map_screen.dart';
 import 'create_ticket_screen.dart';
 import 'screens/view_tickets_screen.dart';
+import 'l10n/app_localizations.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => LanguageProvider(prefs),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -18,25 +32,39 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Auth Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const WelcomeScreen(),
-        '/login': (context) => const LoginScreen(),
-        '/signup': (context) => const SignupScreen(),
-        '/profile': (context) => const ProfileScreen(),
-        '/dashboard': (context) => const DashboardScreen(),
-        '/change-password': (context) => const ChangePasswordScreen(),
-        '/map': (context) => const MapScreen(),
-        '/create-ticket': (context) => const CreateTicketScreen(),
-        '/view-tickets': (context) => const ViewTicketsScreen(),
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, child) {
+        return MaterialApp(
+          locale: languageProvider.currentLocale,
+          supportedLocales: supportedLanguages.map(
+            (lang) => Locale(lang.code),
+          ),
+          localizationsDelegates: const [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          title: 'Flutter Auth Demo',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
+          initialRoute: '/',
+          routes: {
+            '/': (context) => const WelcomeScreen(),
+            '/login': (context) => const LoginScreen(),
+            '/signup': (context) => const SignupScreen(),
+            '/profile': (context) => const ProfileScreen(),
+            '/dashboard': (context) => const DashboardScreen(),
+            '/change-password': (context) => const ChangePasswordScreen(),
+            '/map': (context) => const MapScreen(),
+            '/create-ticket': (context) => const CreateTicketScreen(),
+            '/view-tickets': (context) => const ViewTicketsScreen(),
+          },
+          debugShowCheckedModeBanner: false,
+        );
       },
-      debugShowCheckedModeBanner: false,
     );
   }
 }

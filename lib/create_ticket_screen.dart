@@ -3,6 +3,7 @@ import 'package:location/location.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import '../models/ticket.dart';
+import 'l10n/app_localizations.dart';
 
 class CreateTicketScreen extends StatefulWidget {
   const CreateTicketScreen({Key? key}) : super(key: key);
@@ -71,7 +72,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Ticket'),
+        title: Text(AppLocalizations.of(context).createTicket),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -102,7 +103,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
     return TextFormField(
       controller: _titleController,
       decoration: InputDecoration(
-        labelText: 'Ticket Title',
+        labelText: AppLocalizations.of(context).ticketTitle,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -155,7 +156,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
     return TextFormField(
       controller: _messageController,
       decoration: InputDecoration(
-        labelText: 'Message',
+        labelText: AppLocalizations.of(context).message,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -226,8 +227,8 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
               children: [
                 const Icon(Icons.location_on, color: Colors.blue),
                 const SizedBox(width: 8),
-                const Text(
-                  'Location',
+                Text(
+                  AppLocalizations.of(context).location,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -237,7 +238,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                 if (_currentLocation != null)
                   TextButton(
                     onPressed: () => _getCurrentLocation(),
-                    child: const Text('Update Location'),
+                    child: Text(AppLocalizations.of(context).updateLocation),
                   ),
               ],
             ),

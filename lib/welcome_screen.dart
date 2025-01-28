@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'l10n/app_localizations.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -7,6 +7,18 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+
+    Widget buildWelcomeText() {
+      return Text(
+        AppLocalizations.of(context).welcome,
+        style: const TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        textAlign: TextAlign.center,
+      );
+    }
 
     return Scaffold(
       body: Container(
@@ -29,7 +41,7 @@ class WelcomeScreen extends StatelessWidget {
                 const Spacer(),
                 _buildLogo(),
                 const SizedBox(height: 48),
-                _buildWelcomeText(),
+                buildWelcomeText(),
                 const SizedBox(height: 16),
                 _buildSubText(),
                 const Spacer(),
@@ -60,18 +72,6 @@ class WelcomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildWelcomeText() {
-    return const Text(
-      'Welcome to Flutter Auth',
-      style: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
-      textAlign: TextAlign.center,
-    );
-  }
-
   Widget _buildSubText() {
     return const Text(
       'Your secure authentication solution',
@@ -97,13 +97,7 @@ class WelcomeScreen extends StatelessWidget {
           ),
           elevation: 5,
         ),
-        child: const Text(
-          'Login',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        child: Text(AppLocalizations.of(context).login),
       ),
     );
   }
@@ -121,13 +115,7 @@ class WelcomeScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        child: const Text(
-          'Sign Up',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        child: Text(AppLocalizations.of(context).signup),
       ),
     );
   }

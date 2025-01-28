@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'l10n/app_localizations.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -22,6 +23,9 @@ class _SignupScreenState extends State<SignupScreen> {
     final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context).signup),
+      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -49,21 +53,21 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(height: 40),
                     _buildTextField(
                       controller: _nameController,
-                      hintText: 'Full Name',
+                      hintText: AppLocalizations.of(context).fullName,
                       icon: Icons.person,
                       screenSize: screenSize,
                     ),
                     SizedBox(height: _defaultSpacing),
                     _buildTextField(
                       controller: _emailController,
-                      hintText: 'Email',
+                      hintText: AppLocalizations.of(context).email,
                       icon: Icons.email,
                       screenSize: screenSize,
                     ),
                     SizedBox(height: _defaultSpacing),
                     _buildTextField(
                       controller: _passwordController,
-                      hintText: 'Password',
+                      hintText: AppLocalizations.of(context).password,
                       icon: Icons.lock,
                       obscureText: true,
                       screenSize: screenSize,
@@ -71,7 +75,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     SizedBox(height: _defaultSpacing),
                     _buildTextField(
                       controller: _confirmPasswordController,
-                      hintText: 'Confirm Password',
+                      hintText: AppLocalizations.of(context).confirmPassword,
                       icon: Icons.lock_outline,
                       obscureText: true,
                       screenSize: screenSize,
@@ -152,7 +156,7 @@ class _SignupScreenState extends State<SignupScreen> {
           if (value == null || value.isEmpty) {
             return 'Please enter your $hintText';
           }
-          if (hintText == 'Confirm Password' && value != _passwordController.text) {
+          if (hintText == AppLocalizations.of(context).confirmPassword && value != _passwordController.text) {
             return 'Passwords do not match';
           }
           return null;
@@ -184,9 +188,9 @@ class _SignupScreenState extends State<SignupScreen> {
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
                 ),
               )
-            : const Text(
-                'Sign Up',
-                style: TextStyle(
+            : Text(
+                AppLocalizations.of(context).signup,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),

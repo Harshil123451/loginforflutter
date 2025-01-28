@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -18,6 +19,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context).login),
+      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -74,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return TextFormField(
       controller: _emailController,
       decoration: InputDecoration(
-        hintText: 'Email',
+        labelText: AppLocalizations.of(context).email,
         filled: true,
         fillColor: Colors.white,
         prefixIcon: const Icon(Icons.email),
@@ -97,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
       controller: _passwordController,
       obscureText: true,
       decoration: InputDecoration(
-        hintText: 'Password',
+        labelText: AppLocalizations.of(context).password,
         filled: true,
         fillColor: Colors.white,
         prefixIcon: const Icon(Icons.lock),
@@ -138,9 +142,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
                 ),
               )
-            : const Text(
-                'Login',
-                style: TextStyle(
+            : Text(
+                AppLocalizations.of(context).login,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),

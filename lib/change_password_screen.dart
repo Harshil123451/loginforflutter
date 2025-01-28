@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'l10n/app_localizations.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({Key? key}) : super(key: key);
@@ -21,7 +22,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Change Password'),
+        title: Text(AppLocalizations.of(context).changePassword),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -41,6 +42,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 _buildVerifyOtpButton(),
               ],
               if (_otpVerified) ...[
+                _buildCurrentPasswordField(),
+                const SizedBox(height: 16),
                 _buildNewPasswordField(),
                 const SizedBox(height: 16),
                 _buildConfirmPasswordField(),
@@ -58,7 +61,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return TextFormField(
       controller: _emailController,
       decoration: InputDecoration(
-        labelText: 'Email',
+        labelText: AppLocalizations.of(context).email,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -67,10 +70,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       keyboardType: TextInputType.emailAddress,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please enter your email';
+          return AppLocalizations.of(context).pleaseEnterYourEmail;
         }
         if (!value.contains('@')) {
-          return 'Please enter a valid email';
+          return AppLocalizations.of(context).pleaseEnterAValidEmail;
         }
         return null;
       },
@@ -81,7 +84,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return TextFormField(
       controller: _otpController,
       decoration: InputDecoration(
-        labelText: 'Enter OTP',
+        labelText: AppLocalizations.of(context).enterOTP,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -90,10 +93,30 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       keyboardType: TextInputType.number,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please enter OTP';
+          return AppLocalizations.of(context).pleaseEnterOTP;
         }
         if (value.length != 6) {
-          return 'OTP must be 6 digits';
+          return AppLocalizations.of(context).otpMustBe6Digits;
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildCurrentPasswordField() {
+    return TextFormField(
+      controller: _emailController,
+      decoration: InputDecoration(
+        labelText: AppLocalizations.of(context).currentPassword,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        prefixIcon: const Icon(Icons.lock),
+      ),
+      obscureText: true,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return AppLocalizations.of(context).pleaseEnterCurrentPassword;
         }
         return null;
       },
@@ -104,7 +127,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return TextFormField(
       controller: _newPasswordController,
       decoration: InputDecoration(
-        labelText: 'New Password',
+        labelText: AppLocalizations.of(context).newPassword,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -113,10 +136,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       obscureText: true,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please enter new password';
+          return AppLocalizations.of(context).pleaseEnterNewPassword;
         }
         if (value.length < 6) {
-          return 'Password must be at least 6 characters';
+          return AppLocalizations.of(context).passwordMustBeAtLeast6Characters;
         }
         return null;
       },
@@ -127,7 +150,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return TextFormField(
       controller: _confirmPasswordController,
       decoration: InputDecoration(
-        labelText: 'Confirm New Password',
+        labelText: AppLocalizations.of(context).confirmPassword,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -136,10 +159,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       obscureText: true,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please confirm your password';
+          return AppLocalizations.of(context).pleaseConfirmYourPassword;
         }
         if (value != _newPasswordController.text) {
-          return 'Passwords do not match';
+          return AppLocalizations.of(context).passwordsDoNotMatch;
         }
         return null;
       },
@@ -161,7 +184,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               width: 20,
               child: CircularProgressIndicator(strokeWidth: 2),
             )
-          : const Text('Send OTP'),
+          : Text(AppLocalizations.of(context).sendOTP),
     );
   }
 
@@ -180,7 +203,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               width: 20,
               child: CircularProgressIndicator(strokeWidth: 2),
             )
-          : const Text('Verify OTP'),
+          : Text(AppLocalizations.of(context).verifyOTP),
     );
   }
 
@@ -199,7 +222,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               width: 20,
               child: CircularProgressIndicator(strokeWidth: 2),
             )
-          : const Text('Change Password'),
+          : Text(AppLocalizations.of(context).submit),
     );
   }
 

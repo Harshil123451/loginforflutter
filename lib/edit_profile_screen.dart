@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'l10n/app_localizations.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final String currentName;
@@ -35,7 +36,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title: Text(AppLocalizations.of(context).editProfile),
+        actions: [
+          TextButton(
+            onPressed: _saveChanges,
+            child: Text(AppLocalizations.of(context).save),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -101,7 +108,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return TextFormField(
       controller: _nameController,
       decoration: InputDecoration(
-        labelText: 'Full Name',
+        labelText: AppLocalizations.of(context).fullName,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -120,7 +127,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return TextFormField(
       controller: _emailController,
       decoration: InputDecoration(
-        labelText: 'Email',
+        labelText: AppLocalizations.of(context).email,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -143,7 +150,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return TextFormField(
       controller: _phoneController,
       decoration: InputDecoration(
-        labelText: 'Phone Number',
+        labelText: AppLocalizations.of(context).phone,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -209,6 +216,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _isLoading = false;
         });
       }
+    }
+  }
+
+  void _saveChanges() async {
+    if (_formKey.currentState!.validate()) {
+      Navigator.pop(context, {
+        'name': _nameController.text,
+        'email': _emailController.text,
+        'phone': _phoneController.text,
+      });
     }
   }
 
